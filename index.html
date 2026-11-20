@@ -1,24 +1,36 @@
 <!-- Basic empty HTML page structure -->
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>TDL App</title>
-
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        
-        <div class="container">
-            <h1>To-Do-List</h1>
-            <div class="input-container">
-                <input type="text" id="taskInput" placeholder="Enter a task...">
-                <button id="addTaskBtn">Add Task</button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6750a4">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <header class="app-header">
+            <div>
+                <p class="eyebrow">My workspace</p>
+                <h1>Today’s tasks</h1>
             </div>
-            <ul id="taskList"></ul>
-        </div>
+            <span id="taskCount" class="task-count" aria-live="polite">0 tasks</span>
+        </header>
 
-        <script src="app.js"></script> 
-    </body>
+        <form id="taskForm" class="input-container">
+            <label class="sr-only" for="taskInput">New task</label>
+            <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
+            <button type="submit" id="addTaskBtn" aria-label="Add task">
+                <span aria-hidden="true">＋</span>
+                <span>Add</span>
+            </button>
+        </form>
+
+        <ul id="taskList" class="task-list"></ul>
+        <p id="emptyState" class="empty-state">Nothing on your list. Add a task to get started.</p>
+    </main>
+
+    <script src="app.js"></script>
+</body>
 </html>

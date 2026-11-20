@@ -1,99 +1,90 @@
-// Add a click event listener to the Add button
-document.getElementById("addTaskBtn").addEventListener("click", function() {
-    // Get the input value from the text box
-    var inputValue = document.getElementById("taskInput").value;
+// Improved task interactions with form submission, Enter-key support, accessible check controls, live counts, and an empty state.
 
-    if (inputValue.trim() === "") return; // Prevent adding empty tasks
+const taskForm = document.getElementById("taskForm");
+const taskInput = document.getElementById("taskInput");
+const taskList = document.getElementById("taskList");
+const taskCount = document.getElementById("taskCount");
+const emptyState = document.getElementById("emptyState");
 
-    // Create a new list item element
-    var li = document.createElement("li");
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-    // Create a span for the task text
-    var span = document.createElement("span");
-    span.textContent = inputValue;
-    li.appendChild(span);
-
-    // Add a delete button to the new list item
-    var deleteBtn = document.createElement("button");
-    deleteBtn.innerHTML = "Delete";
-    deleteBtn.className = "deleteBtn";
-    li.appendChild(deleteBtn);
-
-    // Append the list item to the unordered list
-    document.getElementById("taskList").appendChild(li);
-
-    // Clear the input box after adding the item
-    document.getElementById("taskInput").value = "";
-
-    // Save the task to localStorage
-    tasks.push({ text: inputValue, completed: false });
-    saveTasks();
-});
-
-// When list item is clicked, toggle 'completed' class on the span
-document.getElementById("taskList").addEventListener("click", function(e) {
-    if (e.target.tagName === "SPAN") {
-        e.target.classList.toggle("completed");
-    }
-
-    // Save the task to localStorage
-    tasks = Array.from(document.querySelectorAll("#taskList li")).map(function(li) {
-        return {
-            text: li.querySelector("span").textContent.trim(),
-            completed: li.querySelector("span").classList.contains("completed"),
-        };
-    });
-    saveTasks();
-});
-
-// Add a click event listener to the delete button  
-// to remove the list item when clicked
-// This function listens for clicks on the delete button and removes the corresponding task from the list
-
-document.getElementById("taskList").addEventListener("click", function(e) {
-    if (e.target.className === "deleteBtn") {
-        // Remove the list item from the unordered list
-        e.target.parentElement.remove();
-
-        tasks = Array.from(document.querySelectorAll("#taskList li")).map(function(li) {
-            return {
-                text: li.querySelector("span").textContent.trim(),
-                completed: li.querySelector("span").classList.contains("completed"),
-            };
-        });
-        saveTasks();
-    }
-});
-
-let tasks = [];
-// Save tasks to localStorage
 function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
-// Load tasks from localStorage and display them
-function loadTasks() {
-    tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    tasks.forEach(function(task) {
-        var li = document.createElement("li");
 
-        // Create a span for the task text
-        var span = document.createElement("span");
-        span.textContent = task.text;
-        if (task.completed) {
-            span.classList.add("completed");
-        }
-        li.appendChild(span);
-
-        // Add a delete button to the new list item
-        var deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = "Delete";
-        deleteBtn.className = "deleteBtn";
-        li.appendChild(deleteBtn);
-
-        document.getElementById("taskList").appendChild(li);
-    });
+function updateTaskSummary() {
+    const remaining = tasks.filter(task => !task.completed).length;
+    taskCount.textContent = `${remaining} ${remaining === 1 ? "task" : "tasks"}`;
+    emptyState.classList.toggle("hidden", tasks.length > 0);
 }
-// Load tasks when the page loads
-window.onload = function() {
-    loadTasks();
-};
+
+function syncTasksFromList() {
+    tasks = Array.from(taskList.querySelectorAll("li")).map(li => ({
+        text: li.querySelector(".task-text").textContent,
+        completed: li.querySelector(".task-text").classList.contains("completed")
+    }));
+    saveTasks();
+    updateTaskSummary();
+}
+
+function createTaskElement(task) {
+    const li = document.createElement("li");
+
+    const checkbox = document.createElement("button");
+    checkbox.type = "button";
+    checkbox.className = "task-checkbox";
+    checkbox.setAttribute("aria-label", task.completed ? "Mark task incomplete" : "Mark task complete");
+
+    const span = document.createElement("span");
+    span.className = "task-text";
+    span.textContent = task.text;
+    if (task.completed) span.classList.add("completed");
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "deleteBtn";
+    deleteBtn.textContent = "×";
+    deleteBtn.setAttribute("aria-label", `Delete ${task.text}`);
+
+    li.append(checkbox, span, deleteBtn);
+    taskList.appendChild(li);
+}
+
+function toggleTask(li) {
+    const text = li.querySelector(".task-text");
+    text.classList.toggle("completed");
+    li.querySelector(".task-checkbox").setAttribute(
+        "aria-label",
+        text.classList.contains("completed") ? "Mark task incomplete" : "Mark task complete"
+    );
+    syncTasksFromList();
+}
+
+taskForm.addEventListener("submit", event => {
+    event.preventDefault();
+    const text = taskInput.value.trim();
+    if (!text) return;
+
+    const task = { text, completed: false };
+    tasks.push(task);
+    createTaskElement(task);
+    saveTasks();
+    updateTaskSummary();
+    taskInput.value = "";
+    taskInput.focus();
+});
+
+taskList.addEventListener("click", event => {
+    const li = event.target.closest("li");
+    if (!li) return;
+
+    if (event.target.closest(".deleteBtn")) {
+        li.remove();
+        syncTasksFromList();
+    } else if (event.target.closest(".task-checkbox") || event.target.closest(".task-text")) {
+        toggleTask(li);
+    }
+});
+
+tasks.forEach(createTaskElement);
+updateTaskSummary();
