@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap');
 
+/* Light theme */
 :root {
     --purple: #6750a4;
     --purple-dark: #4f3b85;
@@ -233,16 +234,128 @@ button {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Dark theme and expanded layout */
+:root {
+    --purple: #a78bfa;
+    --purple-dark: #c4b5fd;
+    --purple-soft: #332d48;
+    --ink: #f4f2f7;
+    --muted: #aaa6b4;
+    --line: #3a3845;
+    --surface: #25232e;
+    --danger: #fb7185;
+}
+
+body {
+    padding: 48px 24px;
+    color: var(--ink);
+    background:
+        radial-gradient(circle at 15% 15%, rgba(167, 139, 250, 0.14), transparent 28rem),
+        radial-gradient(circle at 85% 85%, rgba(100, 116, 139, 0.12), transparent 24rem),
+        #17151d;
+}
+
+.app-shell {
+    min-height: 560px;
+    padding: 44px;
+    background: rgba(37, 35, 46, 0.96);
+    border: 1px solid #3b3847;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.app-header {
+    margin-bottom: 32px;
+}
+
+.eyebrow {
+    color: #c4b5fd;
+}
+
+.task-count {
+    background: var(--purple-soft);
+    color: #ddd6fe;
+}
+
+.input-container {
+    padding: 10px;
+    margin-bottom: 24px;
+    border-color: var(--line);
+    background: #1f1d27;
+}
+
+.input-container:focus-within {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 5px rgba(167, 139, 250, 0.12);
+}
+
+input[type="text"] {
+    padding: 13px 12px;
+    color: var(--ink);
+}
+
+input::placeholder {
+    color: #85818f;
+}
+
+#addTaskBtn {
+    background: var(--purple);
+    color: #1c1728;
+    box-shadow: 0 8px 18px rgba(167, 139, 250, 0.18);
+}
+
+#addTaskBtn:hover {
+    background: #c4b5fd;
+}
+
+.task-list {
+    gap: 12px;
+}
+
+.task-list li {
+    min-height: 64px;
+    padding: 12px 12px 12px 16px;
+    border-color: var(--line);
+    background: var(--surface);
+}
+
+.task-list li:hover {
+    border-color: #514d60;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.task-checkbox {
+    border-color: #777381;
+}
+
+.completed {
+    color: #85818f;
+}
+
+.deleteBtn {
+    color: #9691a2;
+}
+
+.deleteBtn:hover {
+    background: #432934;
+    color: #fda4af;
+}
+
+.empty-state {
+    margin: 84px 20px 28px;
+}
+
 @media (max-width: 480px) {
     body {
-        align-items: start;
-        padding: 16px;
+        padding: 20px 16px;
     }
 
     .app-shell {
-        min-height: calc(100vh - 32px);
-        padding: 24px 18px;
-        border-radius: 18px;
+        min-height: calc(100vh - 40px);
+        padding: 32px 20px;
+    }
+
+    .app-header {
+        margin-bottom: 26px;
     }
 
     #addTaskBtn {
